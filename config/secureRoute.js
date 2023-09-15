@@ -14,7 +14,7 @@ export const secureRoute = async (req, res, next) => {
     if (!foundUser) {
       throw new Error('User doesn\'t exist')
     }
-
+    req.user = foundUser
     next()
   } catch (error) {
     console.log(error)

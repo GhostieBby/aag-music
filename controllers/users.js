@@ -19,6 +19,7 @@ export const loginUser = async (req, res) => {
     if(!userToLogin) throw new Error ('User not found')
     if (!userToLogin.validatePassword(password)) throw new Error ('Password invalid')
     const token = jwt.sign({ sub: userToLogin._id }, process.env.SECRET, { expiresIn: '7d' })
+    return res.json({ message: `Welcome back, ${userToLogin.username}!`, token: token })
   } catch (error) {
     console.log(error)
   }

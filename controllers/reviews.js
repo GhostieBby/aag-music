@@ -1,18 +1,15 @@
-import mongoose from 'mongoose'
-import Rec from '../models/rec.js'
-
 import User from '../models/user.js'
 
 // * Add Review
 // post /users/:id --> id of the user whose profile is being reviewed
-// NEED TO ADD THIS REVIEW TO USER PROFILE
 export const addReview = async (req, res) => {
   const { id } = req.params
   try {
     const user = await User.findById(id)
-    if (req.user._id != id) { // the equality operator has one equals sign - check this
-      user.reviews.push({ ...req.body, addedBy: req.user._id })
-    }
+    user.reviews.push({ ...req.body, addedBy: req.user._id })
+    // if (req.user._id != id) { // the equality operator has one equals sign - check this
+      
+    // }
     await user.save()
     return res.status(201).json(user)
   } catch (error) {
@@ -28,7 +25,7 @@ export const deleteReview = async (req, res) => {
     const { userId, reviewId } = req.params
     const user = await User.findById(userId)
     const reviewToDelete = user.reviews.id(reviewId)
-    if (reviewToDelete.addedBy.equals(userId)) {
+    if (reviewToDelete.addedBy.equals(req.user._id)) {
       reviewToDelete.deleteOne()
     }
     await user.save()

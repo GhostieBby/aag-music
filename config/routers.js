@@ -17,9 +17,9 @@ router.route('/recs')
 // single routes
 router.route('/recs/:id')
   .get(getSingleRec)
-  .delete(deleteRec)
-  .put(likeRec)
-  .post(createRec)
+  .delete(secureRoute, deleteRec)
+  .put(secureRoute, likeRec)
+  .post(secureRoute, createRec)
 
 // index Route
 router.route('/users')
@@ -28,8 +28,10 @@ router.route('/users')
   .put(updateLikes)
 
 router.route('/users/:id')
-  .post(addReview)
-  .delete(deleteReview)
+  .post(secureRoute, addReview)
+
+router.route('/users/:userId/reviews/:reviewId')
+  .delete(secureRoute, deleteReview)
 
 // single route
 
