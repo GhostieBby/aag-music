@@ -11,7 +11,7 @@ export const addReview = async (req, res) => {
   try {
     const user = await User.findById(id)
     if (req.user._id != id) { // the equality operator has one equals sign - check this
-      user.reviews.push({ ...req.body, addedB: req.user._id })
+      user.reviews.push({ ...req.body, addedBy: req.user._id })
     }
     await user.save()
     return res.status(201).json(user)
