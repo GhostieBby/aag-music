@@ -10,7 +10,7 @@ export const addReview = async (req, res) => {
   const { id } = req.params
   try {
     const user = await User.findById(id)
-    if (req.user._id != id){ // the equality operator has one equals sign - check this
+    if (req.user._id != id) { // the equality operator has one equals sign - check this
       user.reviews.push({ ...req.body, addedB: req.user._id })
     }
     await user.save()
@@ -18,7 +18,24 @@ export const addReview = async (req, res) => {
   } catch (error) {
     console.log(error)
   }
+}
 
+// Delete review
+// delete /users/:id --> id of the user whose profile has been reviewed
+// the person who made the review is allowed to delete the review
+export const deleteReview = async (req, res) => {
+  try {
+    const { userId, reviewId } = req.params
+    const user = await User.findById(userId)
+    const reviewToDelete = user.reviews.id(reviewId)
+    if (reviewToDelete.addedBy.equals(userId)) {
+      reviewToDelete.deleteOne()
+    }
+    await user.save()
+    return res.sendStatus(204)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // 
@@ -44,6 +61,3 @@ export const addReview = async (req, res) => {
 //   }
 // }
 
-export const deleteReview = async (req, res) => {
-  const { recId, reviewId }
-}
