@@ -5,7 +5,7 @@ import Rec from '../models/rec.js'
 // get /recs
 export const getAllRecs = async (req, res) => {
   const recs = await Rec.find()
-  return res.jsonn(recs)
+  return res.json(recs)
 }
 
 // show

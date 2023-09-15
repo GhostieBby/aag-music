@@ -1,6 +1,26 @@
 import mongoose from 'mongoose'
 import Rec from '../models/rec.js'
 
+import User from '../models/user.js'
+
+// * Add Review
+// post /users/:id --> id of the user whose profile is being reviewed
+// NEED TO ADD THIS REVIEW TO USER PROFILE
+export const addReview = async (req, res) => {
+  const { id } = req.params
+  try {
+    const user = await User.findById(id)
+    user.reviews.push({ ...req.body, addedB: req.user._id })
+    await user.save()
+    return res.status(201).json(user)
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+// 
+
 // * Create Review
 // post /recs/:id/reviews
 export const createReview = async (req, res) => {
