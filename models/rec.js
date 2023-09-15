@@ -7,7 +7,8 @@ const recSchema = new mongoose.Schema({
   recommendedBy: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
   recommendedDay: { type: Number, required: true },
   recommendedMonth: { type: Number, required: true },
-  accepted: { type: Boolean, default: false }
+  accepted: { type: Boolean, default: false },
+  addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 })
 const Rec = mongoose.model('Rec', recSchema)
 
