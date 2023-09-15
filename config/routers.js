@@ -3,6 +3,7 @@ import { secureRoute } from './secureRoute.js'
 import { getAllUsers, registerUser, loginUser, getUserProfile } from '../controllers/users.js'
 import { getAllRecs, deleteAllRecs, getSingleRec, createRec, deleteRec, likeRec } from '../controllers/recs.js'
 import { addReview, deleteReview } from '../controllers/reviews.js'
+import { updateLikes } from '../controllers/likes.js'
 
 
 
@@ -12,7 +13,6 @@ const router = express.Router()
 router.route('/recs')
   .get(getAllRecs)
   .delete(deleteAllRecs)
-
 
 // single routes
 router.route('/recs/:id')
@@ -25,6 +25,7 @@ router.route('/recs/:id')
 router.route('/users')
   .get(getAllUsers)
   .post(secureRoute) // createUser
+  .put(updateLikes)
 
 router.route('/users/:id')
   .post(addReview)
