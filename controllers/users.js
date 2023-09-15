@@ -1,5 +1,7 @@
-import user from '../models/user.js'
+import User from '../models/user.js'
 import jwt from 'jsonwebtoken'
+
+// create user
 
 export const registerUser = async (req, res) => {
   try {
@@ -22,3 +24,12 @@ export const loginUser = async (req, res) => {
   }
 }
 
+export const getAllUsers = async (req, res) => {
+  const users = await User.find()
+  return res.json(users)
+}
+
+export const getUserProfile = async (req, res) => {
+  const user = await User.findById(req.user._id).populate('moviesAdded')
+  return res.json(user)
+}

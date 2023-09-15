@@ -1,14 +1,23 @@
 import mongoose from 'mongoose'
 import Rec from '../models/rec.js'
 
-// index
+// ! index routes
+// * show all
 // get /recs
 export const getAllRecs = async (req, res) => {
   const recs = await Rec.find()
   return res.json(recs)
 }
 
-// show
+// * delete all
+// delete /recs
+export const deleteAllRecs = async (req, res) => {
+  const recs = await Rec.deleteMany()
+  return res.json(recs)
+}
+
+// ! single routes
+// * show single
 // get /recs/:id
 export const getSingleRec = async (req, res) => {
   const { id } = req.params
@@ -27,11 +36,11 @@ export const getSingleRec = async (req, res) => {
   }
 }
 
-// create
-// post /recs
+// * create single
+// post /recs/:id
 export const createRec = async (req, res) => {
   try {
-    const recCreated = await Rec.create({ ...req.body. addedBy: req.user._id })
+    const recCreated = await Rec.create({ ...req.body, addedBy: req.user._id })
     return res.status(201).json(recCreated)
   } catch (error) {
     console.log(error.code)
@@ -49,7 +58,7 @@ export const createRec = async (req, res) => {
 
 // don't need update recommendation route
 
-// delete
+// * delete single
 // delete /recs/:id
 export const deleteRec = async (req, res) => {
   const { id } = req.params
@@ -70,8 +79,8 @@ export const deleteRec = async (req, res) => {
   }
 }
 
-// like
-// /recs/:id/like
+// * like single
+// put /recs/:id
 export const likeRec = async (req, res) => {
   const { id } = req.params
   const rec = await Rec.findById(id)
