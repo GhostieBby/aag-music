@@ -1,11 +1,6 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
-// likeSchema should be in a separate file - likes.js
-const likeSchema = new mongoose.Schema({
-  likedUser: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
-  likedBy: [{ type: mongoose.Schema.ObjectId, ref: 'User', required: true }]
-})
 
 const reviewSchema = new mongoose.Schema ({
   rating: { type: Number, required: true, min: 1, max: 5 },

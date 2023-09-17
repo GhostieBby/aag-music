@@ -6,10 +6,12 @@ export const addReview = async (req, res) => {
   const { id } = req.params
   try {
     const user = await User.findById(id)
+    let stringifiedReqUser = JSON.stringify(req.user._id)
+    stringifiedReqUser = stringifiedReqUser.slice(1, stringifiedReqUser.length - 1)
+    if (stringifiedReqUser === id) {
+      return res.status(403).json({ error: 'Cannot review your own profile' })
+    }
     user.reviews.push({ ...req.body, addedBy: req.user._id })
-    // if (req.user._id != id) { // the equality operator has one equals sign - check this
-      
-    // }
     await user.save()
     return res.status(201).json(user)
   } catch (error) {
