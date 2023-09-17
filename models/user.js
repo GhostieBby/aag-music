@@ -1,6 +1,8 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
+import Rec from '/rec/js'
+
 
 const reviewSchema = new mongoose.Schema ({
   rating: { type: Number, required: true, min: 1, max: 5 },
@@ -18,6 +20,7 @@ const userSchema = new mongoose.Schema({
   soundCloudUrl: { type: String, required: false },
   likes: { type: Number, default: 0, required: true },
   reviews: [reviewSchema],
+  userSongs: [Rec.schema],
 })
 
 userSchema
