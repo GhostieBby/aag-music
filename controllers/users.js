@@ -36,3 +36,16 @@ export const getUserProfile = async (req, res) => {
   const user = await User.findById(id)
   return res.json(user)
 }
+
+export const updateProfile = async (req, res) => {
+  const { id } = req.params
+  const user = await User.findById(id)
+  let stringifiedReqUser = JSON.stringify(req.user._id)
+  stringifiedReqUser = stringifiedReqUser.slice(1, stringifiedReqUser.length - 1)
+  if (stringifiedReqUser !== id) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  Object.assign(user, req.body)
+  await user.save()
+  return res.json(user)
+}
