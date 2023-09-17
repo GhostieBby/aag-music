@@ -32,6 +32,7 @@ export const getAllUsers = async (req, res) => {
 }
 
 export const getUserProfile = async (req, res) => {
-  const user = await User.findById(req.user._id).populate('moviesAdded')
+  const { id } = req.params
+  const user = await User.findById(id)
   return res.json(user)
 }
