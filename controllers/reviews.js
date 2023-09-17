@@ -1,7 +1,6 @@
 import User from '../models/user.js'
 
 // * Add Review
-// post /users/:id --> id of the user whose profile is being reviewed
 export const addReview = async (req, res) => {
   const { id } = req.params
   try {
@@ -19,17 +18,15 @@ export const addReview = async (req, res) => {
   }
 }
 
-// Delete review
-// delete /users/:id --> id of the user whose profile has been reviewed
-// the person who made the review is allowed to delete the review
 export const deleteReview = async (req, res) => {
   try {
     const { userId, reviewId } = req.params
     const user = await User.findById(userId)
     const reviewToDelete = user.reviews.id(reviewId)
-    if (reviewToDelete.addedBy.equals(req.user._id)) {
-      reviewToDelete.deleteOne()
+    if (!reviewToDelete.addedBy.equals(req.user._id)) {
+      return res.status(401).json({ error: 'Unauthorized' })
     }
+    reviewToDelete.deleteOne()
     await user.save()
     return res.sendStatus(204)
   } catch (error) {
