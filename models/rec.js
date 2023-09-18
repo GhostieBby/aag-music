@@ -9,6 +9,10 @@ const recSchema = new mongoose.Schema({
   addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   accepted: { type: Boolean },
 })
-const Rec = mongoose.model('Rec', recSchema)
 
-model.exports = Rec
+
+// const Rec = mongoose.model('Rec', recSchema)
+
+// model.exports = Rec
+
+export default mongoose.model('Rec', recSchema)

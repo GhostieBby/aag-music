@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
-import Rec from '/rec/js'
+import Rec from './rec.js'
 
 
 const reviewSchema = new mongoose.Schema ({
