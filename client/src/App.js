@@ -15,3 +15,17 @@ export default function App() {
 
   return <h1>Hello World</h1>
 }
+
+
+const acceptButton = document.getElementById('accept-button');
+const declineButton = document.getElementById('decline-button')
+
+acceptButton.addEventListener('click', async () => {
+  try {
+    const recommendationId = '...'
+    const response = await axios.patch(`/api/recs/${recommendationId}`)
+  } catch (error) {
+    return res.status(500).json({ })
+  }
+})
+
