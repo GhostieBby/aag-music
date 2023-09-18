@@ -10,6 +10,16 @@ export const addReview = async (req, res) => {
     if (stringifiedReqUser === id) {
       return res.status(403).json({ error: 'Cannot review your own profile' })
     }
+    const reviewsAddedBy = user.reviews.map(review => {
+      review = review.addedBy
+      return JSON.stringify(review)
+    })
+    const reviewCheck = reviewsAddedBy.some(reviewId => {
+      return reviewId.includes(stringifiedReqUser)
+    })
+    if (reviewCheck === true){
+      return res.status(409).json({ error: 'Cannot review the same user more than once' })
+    }
     user.reviews.push({ ...req.body, addedBy: req.user._id })
     await user.save()
     return res.status(201).json(user)
