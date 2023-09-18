@@ -2,13 +2,23 @@ import mongoose from 'mongoose'
 import axios from 'axios'
 import { JSDOM } from 'jsdom'
 import Rec from '../models/rec.js'
+import User from '../models.user.js'
 
 // ! index routes
 // * show all
 // get /recs
-export const getAllRecs = async (req, res) => {
-  const recs = await Rec.find()
-  return res.json(recs)
+// This fetches all the songs in the Users current list (accepted and not accepted)
+export const getPendingRecs = async (req, res) => {
+  try {
+    const { id } = req.params
+    const recs = await Rec.find({ recommendedTo: id })
+    const pendingRecs = recs.filter(rec => {
+      return rec.accepted === false
+    })
+    return res.json(pendingRecs)
+  } catch (error) {
+    sendErrors(error, res)
+  }
 }
 
 // * delete all
@@ -44,26 +54,53 @@ export const createRec = async (req, res) => {
   try {
     const { link } = req.body
     const response = await axios.get(link)
+
+    const { id } = req.params
+    const recommendedTo = id
+    const recipient = await User.findById(id)
+
+    const regex = /tracks\/(\d+)&/
+    const match = regex.exec(req.body)
+
+    if (recipient.id == req.user._id) {
+      return res.status(403).json({ error: 'Cannot add recommendation to own playlist' })
+    }
+    const recipientRecs = recipient.userRecs.map(rec => {
+      return rec.recUrl
+    })
+    const recDuplicationCheck = recipientRecs.some(rec => {
+      return rec === req.body.recUrl
+    })
+    if (recDuplicationCheck === true) {
+      return res.status(409).json({ error: 'Recommendation already added to playlist' })
+    }
+
     if (response.status === 200) {
       const html = response.data
+
       // create dom environment and parse html
       const dom = new JSDOM(html)
       const document = dom.window.document
+
       // extract title and artist
       const spanElement = document.querySelector('span')
       if (spanElement) {
         const title = spanElement.textContent.trim()
+
         // get current date
         const currentDate = new Date()
         const recommendedDay = currentDate.getDate()
         const recommendedMonth = currentDate.getMonth() + 1 // months are zero based, so add 1
+
         // assuming req.user contains the sender's info
         const recCreated = await Rec.create({
           title,
-          artist,
           recommendedDay,
           recommendedMonth,
+          recommendedTo,
           addedBy: req.user._id,
+          soundCloudId: match[1],
+          accepted,
         })
         dom.window.close()
         return res.status(201).json(recCreated)
@@ -113,16 +150,21 @@ export const deleteRec = async (req, res) => {
 
 // * like single
 // put /api/recs/:id/accept
-export const likeRec = async (req, res) => {
+export const acceptRec = async (req, res) => {
   try {
-    const recommendationId = req.params._id
+    const { userId, recId } = req.params._id
     const accepted = req.body.accepted
     
     const updatedRec = await Rec.findByIdAndUpdate(
-      recommendationId,
+      recId,
       { accepted },
       { new: true }
     )
+    await Rec.save()
+    const user = await User.findById(userId)
+    user.userRecs.push(updatedRec)
+    await user.save()
+    updateLikes(updatedRec.addedBy)
     if (!updatedRec) {
       return res.status(404).json({ error: 'Recommendation not found'})
     }
@@ -130,4 +172,28 @@ export const likeRec = async (req, res) => {
   } catch (error) {
     return res.status(500).json(error)
   }
+}
+
+
+export const updateLikes = async (addedBy) => {
+  const allRecs = await Rec.find()
+  const user = await User.findById(addedBy)
+  console.log(user)
+  const recs = allRecs.filter(rec => {
+    if (rec.addedBy.equals(addedBy) && rec.accepted === true)
+      return rec
+  })
+  user.likes = recs.length
+  console.log(user)
+  await user.save()
+}
+
+export const getRecsByGivenUser = async (req, res) => {
+  const { id } = req.params
+  const allRecs = await Rec.find()
+  const recs = allRecs.filter(rec => {
+    return rec.addedBy == id && rec.accepted === true
+  })
+
+  return res.json(recs)
 }

@@ -1,28 +1,28 @@
 import express from 'express'
 import { secureRoute } from './secureRoute.js'
 import { getAllUsers, registerUser, loginUser, getUserProfile } from '../controllers/users.js'
-import { getAllRecs, deleteAllRecs, getSingleRec, createRec, deleteRec, likeRec } from '../controllers/recs.js'
+import { getPendingRecs, deleteAllRecs, getSingleRec, createRec, deleteRec, acceptRec, updateLikes, getRecsByGivenUser } from '../controllers/recs.js'
 import { addReview, deleteReview } from '../controllers/reviews.js'
 import { updateLikes } from '../controllers/likes.js'
-import Rec from '../models/rec.js'
+
 
 
 
 const router = express.Router()
 // index routes
 router.route('/recs')
-  .get(getAllRecs)
+  .get(getPendingRecs, getRecsByGivenUser)
   .delete(deleteAllRecs)
 
 // single routes
 router.route('/recs/:id')
   .get(getSingleRec)
   .delete(secureRoute, deleteRec)
-  .put(secureRoute, likeRec)
+  .put(secureRoute, acceptRec)
   .post(secureRoute, createRec)
 
 router.route('/recs/:id/accept')
-  .put(likeRec)
+  .put(acceptRec)
 
 // index Route
 router.route('/users')
