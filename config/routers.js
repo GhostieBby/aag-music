@@ -4,7 +4,7 @@ import { getAllUsers, registerUser, loginUser, getUserProfile } from '../control
 import { getAllRecs, deleteAllRecs, getSingleRec, createRec, deleteRec, likeRec } from '../controllers/recs.js'
 import { addReview, deleteReview } from '../controllers/reviews.js'
 import { updateLikes } from '../controllers/likes.js'
-
+import Rec from '../models/rec.js'
 
 
 
@@ -20,6 +20,9 @@ router.route('/recs/:id')
   .delete(secureRoute, deleteRec)
   .put(secureRoute, likeRec)
   .post(secureRoute, createRec)
+
+router.route('/recs/:id/accept')
+  .put(likeRec)
 
 // index Route
 router.route('/users')

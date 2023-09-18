@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import Rec from '../models/rec.js'
+import App from '../client/src/App.js'
 
 // ! index routes
 // * show all
@@ -93,13 +94,22 @@ export const deleteRec = async (req, res) => {
 }
 
 // * like single
-// put /recs/:id
+// put /api/recs/:id/accept
 export const likeRec = async (req, res) => {
-  const { id } = req.params
-  const rec = await Rec.findById(id)
-  if (!rec.likes.includes(req.user._id)){
-    rec.likes.push(req.user._id)
-    await rec.save()
+  try {
+    const recommendationId = req.params._id
+    const accepted = req.body.accepted
+    
+    const updatedRec = await Rec.findByIdAndUpdate(
+      recommendationId,
+      { accepted },
+      { new: true }
+    )
+    if (!updatedRec) {
+      return res.status(404).json({ error: 'Recommendation not found'})
+    }
+    return res.status(200).json(updatedRec)
+  } catch (error) {
+    return res.status(500).json(error)
   }
-  return res.json(rec)
 }
