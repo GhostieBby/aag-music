@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
+import axios from 'axios'
+import { JSDOM } from 'jsdom'
 import Rec from '../models/rec.js'
-import App from '../client/src/App.js'
 
 // ! index routes
 // * show all
@@ -41,21 +42,38 @@ export const getSingleRec = async (req, res) => {
 // post /recs/:id
 export const createRec = async (req, res) => {
   try {
-    const { title, artist } = req.body
-    // get current date
-    const currentDate = new Date()
-    const recommendedDay = currentDate.getDate()
-    const recommendedMonth = currentDate.getMonth() + 1 // months are zero based, so add 1
-    // assuming req.user contains the sender's info
-    const recCreated = await Rec.create({
-      title,
-      artist,
-      recommendedDay,
-      recommendedMonth,
-      addedBy: req.user._id,
-    })
+    const { link } = req.body
+    const response = await axios.get(link)
+    if (response.status === 200) {
+      const html = response.data
+      // create dom environment and parse html
+      const dom = new JSDOM(html)
+      const document = dom.window.document
+      // extract title and artist
+      const spanElement = document.querySelector('span')
+      if (spanElement) {
+        const title = spanElement.textContent.trim()
+        // get current date
+        const currentDate = new Date()
+        const recommendedDay = currentDate.getDate()
+        const recommendedMonth = currentDate.getMonth() + 1 // months are zero based, so add 1
+        // assuming req.user contains the sender's info
+        const recCreated = await Rec.create({
+          title,
+          artist,
+          recommendedDay,
+          recommendedMonth,
+          addedBy: req.user._id,
+        })
+        dom.window.close()
+        return res.status(201).json(recCreated)
+      } else {
+        return res.status(400).json({ error: 'Span element not found' })
+      }
+    } else {
+      return res.status(400).json({ error: 'Failed to fetch the link' })
+    }
     // can also associate the rec with the receiver here if needed
-    return res.status(201).json(recCreated)
   } catch (error) {
     console.lof(error.code)
     if (error.code === 11000) {
