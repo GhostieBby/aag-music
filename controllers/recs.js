@@ -40,10 +40,23 @@ export const getSingleRec = async (req, res) => {
 // post /recs/:id
 export const createRec = async (req, res) => {
   try {
-    const recCreated = await Rec.create({ ...req.body, addedBy: req.user._id })
+    const { title, artist } = req.body
+    // get current date
+    const currentDate = new Date()
+    const recommendedDay = currentDate.getDate()
+    const recommendedMonth = currentDate.getMonth() + 1 // months are zero based, so add 1
+    // assuming req.user contains the sender's info
+    const recCreated = await Rec.create({
+      title,
+      artist,
+      recommendedDay,
+      recommendedMonth,
+      addedBy: req.user._id,
+    })
+    // can also associate the rec with the receiver here if needed
     return res.status(201).json(recCreated)
   } catch (error) {
-    console.log(error.code)
+    console.lof(error.code)
     if (error.code === 11000) {
       return res.status(422).json({
         error: {
