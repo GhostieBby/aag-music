@@ -7,10 +7,15 @@
     "seed": "node db/seeds.js",
     "serve": "npx nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "testy": "react-scripts test",
+    "eject": "react-scripts eject",
+    "dev": "react-scripts start"
   },
   "keywords": [],
-  "author": "",
+  "author": "Gagan",
   "license": "ISC",
   "type": "module",
   "dependencies": {
@@ -20,6 +25,12 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.0.0",
-    "mongoose": "^7.5.1"
+    "mongoose": "^7.5.1",
+    "axios": "^1.5.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "aag-music"
   }
 }
